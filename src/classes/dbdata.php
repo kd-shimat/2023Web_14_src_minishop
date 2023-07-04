@@ -8,7 +8,7 @@ class  Dbdata       // DbDataクラスの宣言
     public  function  __construct()
     {
         // PDOオブジェクトを生成する 															
-        $dsn = 'mysql:host=db;dbname=minishop;charset=utf8';
+        $dsn = 'mysql:host=localhost;dbname=minishop;charset=utf8';
         $user = 'mini';
         $password = 'shop';
         try {
