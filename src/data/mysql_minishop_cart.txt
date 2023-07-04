@@ -1,0 +1,10 @@
+# データベースminishopを使用する	
+set names utf8;	
+use minishop;	
+	
+# カートテーブルcartの作成	
+drop table if exists cart;	
+create table cart (	
+	ident     int   auto_increment   primary   key,	
+	quantity  int
+);	
