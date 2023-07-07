@@ -77,67 +77,92 @@ class SampleTest extends TestCase
         $this->assertEquals(2, $cart['quantity'], 'カート追加処理に誤りがあります。');
     }
 
-    // public function testCartdelete()
-    // {
-    //     // 指定URLへ遷移 (Google)
-    //     $this->driver->get('http://php/src/index.php');
 
-    //     // ラジオボタンをクリック
-    //     $this->driver->findElement(WebDriverBy::xpath("//input[@type='radio' and @name='genre' and @value='music']"))->click();
 
-    //     // inputタグの要素を取得
-    //     $element_input = $this->driver->findElements(WebDriverBy::tagName('input'));
+    public function testCartChange()
+    {
+        // 指定URLへ遷移 (Google)
+        $this->driver->get('http://php/src/index.php');
 
-    //     // 画面遷移実行
-    //     $element_input[3]->submit();
+        // ラジオボタンをクリック
+        $this->driver->findElement(WebDriverBy::xpath("//input[@type='radio' and @name='genre' and @value='music']"))->click();
 
-    //     // リンクをクリック
-    //     $element_a = $this->driver->findElements(WebDriverBy::tagName('a'));
-    //     $element_a[0]->click();
+        // inputタグの要素を取得
+        $element_input = $this->driver->findElements(WebDriverBy::tagName('input'));
 
-    //     // tdタグの要素を取得
-    //     $element_td = $this->driver->findElements(WebDriverBy::tagName('td'));
+        // 画面遷移実行
+        $element_input[3]->submit();
 
-    //     //データベースの値を取得
-    //     $sql = 'select * from items where ident = ?';       // SQL文の定義
-    //     $stmt = $this->pdo->prepare($sql);
-    //     $stmt->execute(['11']);
-    //     $item = $stmt->fetch();
+        // リンクをクリック
+        $element_a = $this->driver->findElements(WebDriverBy::tagName('a'));
+        $element_a[0]->click();
 
-    //     // assert
-    //     $this->assertEquals($item['name'], $element_td[0]->getText(), '商品詳細画面の処理に誤りがあります。');
-    // }
+        // 注文数を「2」にする
+        $selector = $this->driver->findElement(WebDriverBy::tagName('select'))
+            ->findElement(WebDriverBy::cssSelector("option[value='2']"))
+            ->click();
 
-    // public function testCartChange()
-    // {
-    //     // 指定URLへ遷移 (Google)
-    //     $this->driver->get('http://php/src/index.php');
+        // 画面遷移実行
+        $selector->submit();
 
-    //     // ラジオボタンをクリック
-    //     $this->driver->findElement(WebDriverBy::xpath("//input[@type='radio' and @name='genre' and @value='music']"))->click();
+        // カート画面で注文数を「4」にする
+        $selector = $this->driver->findElement(WebDriverBy::tagName('select'))
+            ->findElement(WebDriverBy::cssSelector("option[value='4']"))
+            ->click();
 
-    //     // inputタグの要素を取得
-    //     $element_input = $this->driver->findElements(WebDriverBy::tagName('input'));
+        // カート画面のinputタグの要素を取得
+        $element_form = $this->driver->findElements(WebDriverBy::tagName('form'));
+        $element_form[0]->submit();
 
-    //     // 画面遷移実行
-    //     $element_input[3]->submit();
 
-    //     // リンクをクリック
-    //     $element_a = $this->driver->findElements(WebDriverBy::tagName('a'));
-    //     $element_a[0]->click();
+        //データベースの値を取得
+        $sql = 'select items.ident, items.name, items.maker, items.price, cart.quantity, 								
+       items.image, items.genre from cart join items on cart.ident = items.ident where items.ident = ?';       // SQL文の定義
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([11]);
+        $cart = $stmt->fetch();
+        $this->assertEquals(4, $cart['quantity'], '注文数変更処理に誤りがあります。');
+    }
 
-    //     // tdタグの要素を取得
-    //     $element_td = $this->driver->findElements(WebDriverBy::tagName('td'));
+    public function testCartdelete()
+    {
+        // 指定URLへ遷移 (Google)
+        $this->driver->get('http://php/src/index.php');
 
-    //     //データベースの値を取得
-    //     $sql = 'select * from items where ident = ?';       // SQL文の定義
-    //     $stmt = $this->pdo->prepare($sql);
-    //     $stmt->execute(['11']);
-    //     $item = $stmt->fetch();
+        // ラジオボタンをクリック
+        $this->driver->findElement(WebDriverBy::xpath("//input[@type='radio' and @name='genre' and @value='music']"))->click();
 
-    //     // assert
-    //     $this->assertEquals($item['name'], $element_td[0]->getText(), '商品詳細画面の処理に誤りがあります。');
+        // inputタグの要素を取得
+        $element_input = $this->driver->findElements(WebDriverBy::tagName('input'));
 
-    //     $this->driver->close();
-    // }
+        // 画面遷移実行
+        $element_input[3]->submit();
+
+        // リンクをクリック
+        $element_a = $this->driver->findElements(WebDriverBy::tagName('a'));
+        $element_a[0]->click();
+
+        // 注文数を「2」にし、「カートに入れる」をクリック
+        $selector = $this->driver->findElement(WebDriverBy::tagName('select'))
+            ->findElement(WebDriverBy::cssSelector("option[value='2']"))
+            ->click();
+
+        // 画面遷移実行
+        $selector->submit();
+
+        // カート画面のinputタグの要素を取得
+        $element_form = $this->driver->findElements(WebDriverBy::tagName('form'));
+        // var_dump($element_form);
+        $element_form[1]->submit();
+
+        //データベースの値を取得
+        $sql = 'select items.ident, items.name, items.maker, items.price, cart.quantity, 								
+        items.image, items.genre from cart join items on cart.ident = items.ident';     // SQL文の定義
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([]);
+        $count = $stmt->rowCount();    // レコード数の取得
+        $this->assertEquals(0, $count, 'カート削除処理に誤りがあります。');
+
+        $this->driver->close();
+    }
 }
