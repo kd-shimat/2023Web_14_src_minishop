@@ -163,6 +163,6 @@ class SampleTest extends TestCase
         $count = $stmt->rowCount();    // レコード数の取得
         $this->assertEquals(0, $count, 'カート削除処理に誤りがあります。');
 
-        $this->driver->close();
+        //$this->driver->close();
     }
 }
